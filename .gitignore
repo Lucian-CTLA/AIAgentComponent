@@ -1,0 +1,47 @@
+# ===========================================================================
+# Unreal Engine 5 - Git Ignore
+# 排除所有构建产物与运行时生成目录，只保留源码、配置与内容资产。
+# ===========================================================================
+
+# --- Visual Studio / IDE ---
+.vs/
+.vscode/
+*.sln
+*.sln.DotSettings
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sdf
+
+# --- 编译产物 (Binaries) ---
+Binaries/
+Plugins/*/Binaries/
+
+# --- 中间文件 (Intermediate) ---
+Intermediate/
+Plugins/*/Intermediate/
+
+# --- 构建脚本输出 ---
+Build/
+Plugins/*/Build/
+
+# --- 运行时生成内容 (Saved) ---
+Saved/
+
+# --- 派生数据缓存 ---
+DerivedDataCache/
+
+# --- 本地文档 (可选) ---
+Documentation/ExportedDocs/
+
+# --- 日志与临时文件 ---
+*.log
+*.debug
+
+# --- 操作系统垃圾 ---
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- 本地用户配置 ---
+*.user
