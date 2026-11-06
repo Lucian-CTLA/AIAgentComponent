@@ -6,19 +6,118 @@
 
 ## 当前进度
 
-当前已完成第一天基础功能：
+当前已完成第二天功能：
 
 - 创建运行时插件
 - 创建可交互 Actor 接口
 - 创建可交互组件
-- 配置交互开关
-- 配置交互范围
-- 配置交互对象类型
-- 配置可用动作
-- 在蓝图中添加交互组件
-- 以可破坏罐子作为测试对象
+- 创建 Character 交互组件
+- 检测范围内的可交互 Actor
+- 保存当前交互目标
+- 校验交互动作是否合法
+- 通过接口向目标 Actor 发送动作
+- 完成可破坏罐子示例
+- 支持 Attack 动作
+- 支持生命值扣除
+- 支持隐藏 Actor
+- 支持关闭 Actor 碰撞
 
-当前版本暂未接入本地 AI API。
+当前暂未接入本地 AI API。
+
+## 第二天完成内容
+
+### Character 交互组件
+
+`UAIInteractionComponent` 挂载到 Character 上，负责处理角色侧的交互逻辑。
+
+主要功能包括：
+
+- 检测指定半径内的 Actor
+- 查找 Actor 上的交互组件
+- 过滤不可交互对象
+- 保存检测到的 Actor
+- 设置当前目标
+- 执行动作前进行合法性校验
+- 通过交互接口发送动作
+
+核心流程：
+
+```text
+Character
+↓
+范围检测
+↓
+筛选可交互 Actor
+↓
+保存当前目标
+↓
+检查动作是否合法
+↓
+发送交互事件
+```
+
+### 目标检测
+
+角色按下 E 键后执行：
+
+```text
+Scan Interactable Actors
+→ Get Detected Actors
+→ 检查数组长度
+→ Get(0)
+→ Set Current Target
+```
+
+当目标数量为 0 时，不访问数组的第一个元素，避免出现数组越界错误。
+
+### 动作执行
+
+角色按下 F 键后执行：
+
+```text
+Interact With Current Target
+Action Name = Attack
+```
+
+插件会依次检查：
+
+- 当前目标是否有效
+- 目标是否存在交互组件
+- 目标是否支持 Attack
+- 目标是否实现交互接口
+
+所有条件满足后，调用：
+
+```text
+Event ReceiveInteraction
+```
+
+### 可破坏罐子示例
+
+`BP_BreakablePot` 使用以下配置：
+
+```text
+Can Interact: true
+Interaction Range: 250
+Interaction Type: Destructible
+Available Actions: Interact、Attack
+```
+
+罐子收到 `Attack` 后执行：
+
+```text
+Current Health - 1
+→ 判断 Current Health <= 0
+→ 设置 Broken = true
+→ 隐藏 Actor
+→ 关闭 Actor 碰撞
+```
+
+### 当前测试结果
+
+```text
+按 E 选择罐子 → 按 F 执行 Attack → 罐子成功隐藏 → 罐子碰撞关闭
+```
 
 ## 技术栈
 
@@ -39,12 +138,14 @@ Plugins/AIInteractionPlugin
 │       ├── AIInteractionPlugin.Build.cs
 │       ├── Public
 │       │   ├── Components
-│       │   │   └── InteractableComponent.h
+│       │   │   ├── InteractableComponent.h
+│       │   │   └── AIInteractionComponent.h
 │       │   └── Interfaces
 │       │       └── AIInteractableInterface.h
 │       └── Private
 │           └── Components
-│               └── InteractableComponent.cpp
+│               ├── InteractableComponent.cpp
+│               └── AIInteractionComponent.cpp
 └── Resources
 ```
 
